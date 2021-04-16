@@ -1,0 +1,30 @@
+version: '3.1'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        - NODE_ENV=development
+    environment:
+      - PORT=3000
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
+    links:
+      - postgres:postgres
+    volumes:
+      - ./:/usr/src/app/
+      - /usr/src/app/node_modules
+
+  postgres:
+    image: postgres:alpine
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_USER=docker
+      - POSTGRES_DB=acl
+    ports:
+      - 5432:5432
