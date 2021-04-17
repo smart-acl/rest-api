@@ -1,6 +1,14 @@
-import * as argon2 from 'argon2';
+import argon2 from 'argon2';
 import {IsEmail} from 'class-validator';
-import {Entity, PrimaryGeneratedColumn, Column, BeforeInsert} from 'typeorm';
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    BeforeInsert,
+    OneToMany,
+} from 'typeorm';
+
+import {PermissionsEntity} from 'src/permissions/permissions.entity';
 
 @Entity('user')
 export class UserEntity {
@@ -14,14 +22,11 @@ export class UserEntity {
     @IsEmail()
     email: string;
 
-    @Column({default: ''})
-    bio: string;
-
-    @Column({default: ''})
-    image: string;
-
     @Column()
     password: string;
+
+    @OneToMany(() => PermissionsEntity, p => p.name)
+    permissions: string[];
 
     @BeforeInsert()
     async hashPassword(): Promise<void> {

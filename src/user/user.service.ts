@@ -3,7 +3,7 @@ import {HttpStatus} from '@nestjs/common';
 import {HttpException} from '@nestjs/common/exceptions/http.exception';
 import {JwtService} from '@nestjs/jwt';
 import {InjectRepository} from '@nestjs/typeorm';
-import * as argon2 from 'argon2';
+import argon2 from 'argon2';
 import {validate} from 'class-validator';
 import {Repository, getRepository} from 'typeorm';
 
@@ -95,8 +95,6 @@ export class UserService {
             id: user.id,
             username: user.username,
             email: user.email,
-            bio: user.bio,
-            image: user.image,
         };
 
         return {user: userRO};

@@ -2,6 +2,8 @@ import {NestFactory} from '@nestjs/core';
 import {SwaggerModule, DocumentBuilder} from '@nestjs/swagger';
 // import csurf from 'csurf';
 
+import {ValidationPipe} from 'src/shared/pipes/validation.pipe';
+
 import {ApplicationModule} from './app.module';
 
 (async function () {
@@ -9,6 +11,7 @@ import {ApplicationModule} from './app.module';
         cors: true,
     });
     app.setGlobalPrefix('api');
+    app.useGlobalPipes(new ValidationPipe());
 
     const options = new DocumentBuilder()
         .setTitle('Smart ACL Admin REST API')

@@ -1,4 +1,12 @@
-import {Param, HttpStatus, Get, Post, Body, Controller, UseGuards} from '@nestjs/common';
+import {
+    Param,
+    HttpStatus,
+    Get,
+    Post,
+    Body,
+    Controller,
+    UseGuards,
+} from '@nestjs/common';
 import {HttpException} from '@nestjs/common/exceptions/http.exception';
 import {JwtService} from '@nestjs/jwt';
 import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';

@@ -1,10 +1,12 @@
-import {Module} from '@nestjs/common';
+import {Module, CacheModule, CacheInterceptor} from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
+import {APP_INTERCEPTOR} from '@nestjs/core';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {Connection} from 'typeorm';
 
 import {AppSettingsModule} from './appSettings/appSettings.module';
 import {HealthcheckModule} from './healthcheck/healthcheck.module';
+import {PermissionsModule} from './permissions/permissions.module';
 import {UserModule} from './user/user.module';
 
 @Module({
@@ -14,12 +16,19 @@ import {UserModule} from './user/user.module';
             isGlobal: true,
         }),
         TypeOrmModule.forRoot(),
+        CacheModule.register(),
         UserModule,
         HealthcheckModule,
         AppSettingsModule,
+        PermissionsModule,
     ],
     controllers: [],
-    providers: [],
+    providers: [
+        {
+            provide: APP_INTERCEPTOR,
+            useClass: CacheInterceptor,
+        },
+    ],
 })
 export class ApplicationModule {
     constructor(private readonly connection: Connection) {}

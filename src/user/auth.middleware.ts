@@ -1,7 +1,7 @@
 import {NestMiddleware, HttpStatus, Injectable} from '@nestjs/common';
 import {HttpException} from '@nestjs/common/exceptions/http.exception';
 import {Request, Response, NextFunction} from 'express';
-import * as jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import {Indexed} from 'utils';
 
 import {UserService} from './user.service';
