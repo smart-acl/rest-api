@@ -2,11 +2,13 @@ import {PipeTransform, ArgumentMetadata, BadRequestException, HttpStatus, Inject
 import {HttpException} from '@nestjs/common/exceptions/http.exception';
 import {plainToClass} from 'class-transformer';
 import {validate} from 'class-validator';
+import {Indexed} from 'utils';
+
+const validateTypes = [String, Boolean, Number, Array, Object];
 
 @Injectable()
-export class ValidationPipe implements PipeTransform<any> {
-    async transform(value, metadata: ArgumentMetadata) {
-
+export class ValidationPipe implements PipeTransform<unknown> {
+    async transform<T>(value: T, metadata: ArgumentMetadata): Promise<T | Error> {
         if (!value) {
             throw new BadRequestException('No data submitted');
         }
@@ -23,7 +25,7 @@ export class ValidationPipe implements PipeTransform<any> {
         return value;
     }
 
-    private buildError(errors) {
+    private buildError<T extends {property: unknown; constraints: Indexed}>(errors: T[]) {
         const result = {};
         errors.forEach(el => {
             const prop = el.property;
@@ -35,7 +37,6 @@ export class ValidationPipe implements PipeTransform<any> {
     }
 
     private toValidate(metatype): boolean {
-        const types = [String, Boolean, Number, Array, Object];
-        return !types.find(type => metatype === type);
+        return !validateTypes.find(type => metatype === type);
     }
 }

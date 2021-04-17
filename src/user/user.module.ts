@@ -15,7 +15,7 @@ import {UserService} from './user.service';
     exports: [UserService],
 })
 export class UserModule implements NestModule {
-    public configure(consumer: MiddlewareConsumer) {
+    public configure(consumer: MiddlewareConsumer): void {
         consumer
             .apply(AuthMiddleware)
             .forRoutes({path: 'user', method: RequestMethod.GET}, {path: 'user', method: RequestMethod.PUT});

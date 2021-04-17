@@ -1,9 +1,6 @@
 import {Get, Post, Body, Put, Delete, Param, Controller, UsePipes} from '@nestjs/common';
 import {HttpException} from '@nestjs/common/exceptions/http.exception';
-import {
-    ApiBearerAuth, ApiTags,
-} from '@nestjs/swagger';
-import {Request} from 'express';
+import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
 
 import {ValidationPipe} from '../shared/pipes/validation.pipe';
 import {CreateUserDto, UpdateUserDto, LoginUserDto} from './dto';
@@ -15,7 +12,6 @@ import {UserService} from './user.service';
 @ApiTags('user')
 @Controller()
 export class UserController {
-
     constructor(private readonly userService: UserService) {}
 
   @Get('user')

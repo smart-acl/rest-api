@@ -1,12 +1,9 @@
 import * as argon2 from 'argon2';
 import {IsEmail} from 'class-validator';
-import {Entity, PrimaryGeneratedColumn, Column, BeforeInsert, JoinTable, ManyToMany, OneToMany} from 'typeorm';
-
-import {ArticleEntity} from '../article/article.entity';
+import {Entity, PrimaryGeneratedColumn, Column, BeforeInsert} from 'typeorm';
 
 @Entity('user')
 export class UserEntity {
-
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -27,14 +24,7 @@ export class UserEntity {
   password: string;
 
   @BeforeInsert()
-  async hashPassword() {
+  async hashPassword(): Promise<void> {
       this.password = await argon2.hash(this.password);
   }
-
-  @ManyToMany(type => ArticleEntity)
-  @JoinTable()
-  favorites: ArticleEntity[];
-
-  @OneToMany(type => ArticleEntity, article => article.author)
-  articles: ArticleEntity[];
 }

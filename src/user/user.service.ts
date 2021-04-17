@@ -5,6 +5,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import * as argon2 from 'argon2';
 import {validate} from 'class-validator';
 import {Repository, getRepository, DeleteResult} from 'typeorm';
+import {Indexed} from 'utils';
 
 import {SECRET} from '../config';
 import {CreateUserDto, LoginUserDto, UpdateUserDto} from './dto';
@@ -59,7 +60,6 @@ export class UserService {
         newUser.username = username;
         newUser.email = email;
         newUser.password = password;
-        newUser.articles = [];
 
         const errors = await validate(newUser);
         if (errors.length > 0) {
@@ -76,7 +76,6 @@ export class UserService {
     async update(id: number, dto: UpdateUserDto): Promise<UserEntity> {
         const toUpdate = await this.userRepository.findOne(id);
         delete toUpdate.password;
-        delete toUpdate.favorites;
 
         const updated = Object.assign(toUpdate, dto);
         return await this.userRepository.save(updated);
@@ -102,7 +101,7 @@ export class UserService {
         return this.buildUserRO(user);
     }
 
-    public generateJWT(user) {
+    public generateJWT(user: Indexed) {
         const today = new Date();
         const exp = new Date(today);
         exp.setDate(today.getDate() + 60);
