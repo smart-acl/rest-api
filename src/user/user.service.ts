@@ -17,9 +17,18 @@ const jwt = require('jsonwebtoken');
 @Injectable()
 export class UserService {
     constructor(
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
-    ) {}
+        @InjectRepository(UserEntity)
+        private readonly userRepository: Repository<UserEntity>,
+    ) {
+    }
+
+    getUserByEmail(email: string) {
+        return {} as UserEntity;
+    }
+
+    createUser(data: any): UserEntity {
+        return {} as UserEntity;
+    }
 
     async findAll(): Promise<UserEntity[]> {
         return await this.userRepository.find();

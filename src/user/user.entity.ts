@@ -4,27 +4,27 @@ import {Entity, PrimaryGeneratedColumn, Column, BeforeInsert} from 'typeorm';
 
 @Entity('user')
 export class UserEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column()
-  username: string;
+    @Column()
+    username: string;
 
-  @Column()
-  @IsEmail()
-  email: string;
+    @Column()
+    @IsEmail()
+    email: string;
 
-  @Column({default: ''})
-  bio: string;
+    @Column({default: ''})
+    bio: string;
 
-  @Column({default: ''})
-  image: string;
+    @Column({default: ''})
+    image: string;
 
-  @Column()
-  password: string;
+    @Column()
+    password: string;
 
-  @BeforeInsert()
-  async hashPassword(): Promise<void> {
-      this.password = await argon2.hash(this.password);
-  }
+    @BeforeInsert()
+    async hashPassword(): Promise<void> {
+        this.password = await argon2.hash(this.password);
+    }
 }

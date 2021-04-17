@@ -10,7 +10,7 @@ export class BaseController {
         }
 
         const token = authorization.split(' ')[1];
-        const decoded: Indexed = jwt.verify(token, SECRET);
-        return decoded.id;
+        const decoded = jwt.verify(token, SECRET);
+        return (decoded as Indexed).id;
     }
 }
