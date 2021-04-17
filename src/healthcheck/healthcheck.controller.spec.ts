@@ -18,7 +18,6 @@ describe('HealthcheckController', () => {
   describe('pong', () => {
     it('should return ok and object', async () => {
       const findAllResult = await controller.pong();
-      console.log(findAllResult);
       expect(findAllResult).toBe({});
     });
   });

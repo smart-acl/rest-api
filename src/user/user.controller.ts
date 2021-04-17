@@ -1,52 +1,60 @@
-import {Get, Post, Body, Put, Delete, Param, Controller, UsePipes} from '@nestjs/common';
+import {Param, HttpStatus, Get, Post, Body, Controller, UseGuards} from '@nestjs/common';
 import {HttpException} from '@nestjs/common/exceptions/http.exception';
+import {JwtService} from '@nestjs/jwt';
 import {ApiBearerAuth, ApiTags} from '@nestjs/swagger';
+import omit from 'lodash/omit';
 
 import {ValidationPipe} from '../shared/pipes/validation.pipe';
-import {CreateUserDto, UpdateUserDto, LoginUserDto} from './dto';
+import {CreateUserDto, LoginUserDto} from './dto';
+import {JwtAuthGuard} from './guards/jwt-auth.guard';
 import {User} from './user.decorator';
-import {UserRO} from './user.interface';
+import {UserEntity} from './user.entity';
+import {UserRO, TokenResponse} from './user.interface';
 import {UserService} from './user.service';
 
 @ApiBearerAuth()
-@ApiTags('user')
-@Controller()
+@ApiTags('users')
+@Controller('users')
 export class UserController {
-    constructor(private readonly userService: UserService) {
+    constructor(
+        private readonly userService: UserService,
+        private jwtService: JwtService,
+    ) {
     }
 
-    @Get('user')
-    async findMe(@User('email') email: string): Promise<UserRO> {
-        return await this.userService.findByEmail(email);
+    @UseGuards(JwtAuthGuard)
+    @Get('user/:email')
+    async findUser(@Param('email', ValidationPipe) email: string): Promise<UserRO> {
+        const user = await this.userService.findByEmail(email);
+
+        if (!user) {
+            throw new HttpException({message: 'no user'}, HttpStatus.BAD_REQUEST);
+        }
+
+        return user;
     }
 
-    @Put('user')
-    async update(@User('id') userId: number, @Body('user') userData: UpdateUserDto) {
-        return await this.userService.update(userId, userData);
+    @UseGuards(JwtAuthGuard)
+    @Get('me')
+    async findMe(@User() user: UserEntity): Promise<UserRO> {
+        return {user: user};
     }
 
-    @UsePipes(new ValidationPipe())
-    @Post('users')
+    @Post('register')
     async create(@Body('user') userData: CreateUserDto) {
         return this.userService.create(userData);
     }
 
-    @Delete('users/:slug')
-    async delete(@Param() params) {
-        return await this.userService.delete(params.slug);
-    }
+    @Post('login')
+    async login(@Body('user') loginUserDto: LoginUserDto): Promise<TokenResponse> {
+        const user = await this.userService.findOne(loginUserDto);
 
-    @UsePipes(new ValidationPipe())
-    @Post('users/login')
-    async login(@Body('user') loginUserDto: LoginUserDto): Promise<UserRO> {
-        const _user = await this.userService.findOne(loginUserDto);
+        const errors = {User: 'not found'};
+        if (!user) {
+            throw new HttpException({errors}, HttpStatus.UNAUTHORIZED);
+        }
 
-        const errors = {User: ' not found'};
-        if (!_user) throw new HttpException({errors}, 401);
-
-        const token = await this.userService.generateJWT(_user);
-        const {email, username, bio, image} = _user;
-        const user = {email, token, username, bio, image};
-        return {user};
+        const token = this.jwtService.sign(omit(user, ['password']));
+        return {access_token: token};
     }
 }

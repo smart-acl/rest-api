@@ -4,7 +4,6 @@ import {Request, Response, NextFunction} from 'express';
 import * as jwt from 'jsonwebtoken';
 import {Indexed} from 'utils';
 
-import {SECRET} from '../config';
 import {UserService} from './user.service';
 
 @Injectable()
@@ -16,7 +15,7 @@ export class AuthMiddleware implements NestMiddleware {
         const token = authHeaders?.split(' ')?.[1];
 
         if (token) {
-            const decoded = jwt.verify(token, SECRET);
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
             const user = await this.userService.findById((decoded as Indexed).id);
 
             if (!user) {

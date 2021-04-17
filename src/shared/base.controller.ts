@@ -1,8 +1,6 @@
 import * as jwt from 'jsonwebtoken';
 import {Indexed} from 'utils';
 
-import {SECRET} from '../config';
-
 export class BaseController {
     protected getUserIdFromToken(authorization: string): string {
         if (!authorization) {
@@ -10,7 +8,7 @@ export class BaseController {
         }
 
         const token = authorization.split(' ')[1];
-        const decoded = jwt.verify(token, SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         return (decoded as Indexed).id;
     }
 }

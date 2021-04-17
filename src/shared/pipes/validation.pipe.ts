@@ -10,7 +10,7 @@ const validateTypes = [String, Boolean, Number, Array, Object];
 export class ValidationPipe implements PipeTransform<unknown> {
     async transform<T>(value: T, metadata: ArgumentMetadata): Promise<T | Error> {
         if (!value) {
-            throw new BadRequestException('No data submitted');
+            throw new BadRequestException(`error: no field ${metadata.data}`);
         }
 
         const {metatype} = metadata;
@@ -20,7 +20,13 @@ export class ValidationPipe implements PipeTransform<unknown> {
         const object = plainToClass(metatype, value);
         const errors = await validate(object);
         if (errors.length > 0) {
-            throw new HttpException({message: 'Input data validation failed', errors:  this.buildError(errors)}, HttpStatus.BAD_REQUEST);
+            throw new HttpException(
+                {
+                    message: 'Input data validation failed',
+                    errors:  this.buildError(errors),
+                },
+                HttpStatus.BAD_REQUEST,
+            );
         }
         return value;
     }
