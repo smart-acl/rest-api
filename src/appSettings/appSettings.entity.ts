@@ -8,6 +8,8 @@ export class AppSettingsEntity {
     @Column()
     accessRegister: boolean;
 
-    @Column()
+    @Column({
+        nullable: true,
+    })
     authDomainRegexp: string;
 }

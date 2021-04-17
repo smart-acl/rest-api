@@ -4,9 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node -r ./tsconfig-paths-bootstrap.js dist/main.js",
     "start:prod": "node dist/main.js",
-    "start:dev": "nest start --watch --exec 'node -r tsconfig-paths/register -r ts-node/register ./src/main.ts'",
+    "start:dev": "better-npm-run dev",
     "build": "npm-run-all clear:app build:tsc",
     "build:tsc": "tsc",
     "clear:app": "rm -rf dist",
@@ -23,6 +22,7 @@
   "license": "ISC",
   "dependencies": {
     "@nestjs/common": "7.0.5",
+    "@nestjs/config": "0.6.3",
     "@nestjs/core": "7.0.5",
     "@nestjs/jwt": "7.2.0",
     "@nestjs/microservices": "7.0.5",
@@ -31,13 +31,17 @@
     "@nestjs/testing": "7.0.5",
     "@nestjs/typeorm": "7.0.0",
     "@nestjs/websockets": "7.0.5",
+    "@types/lodash": "4.14.168",
     "argon2": "0.26.2",
     "bcryptjs": "2.4.3",
     "class-transformer": "0.2.3",
     "class-validator": "0.11.1",
     "crypto": "1.0.1",
     "crypto-js": "4.0.0",
+    "csurf": "1.11.0",
+    "dotenv": "8.2.0",
     "jsonwebtoken": "8.5.1",
+    "lodash": "4.17.21",
     "moment": "2.29.1",
     "moment-timezone": "0.5.33",
     "passport-jwt": "4.0.0",
@@ -51,6 +55,7 @@
   },
   "devDependencies": {
     "@nestjs/cli": "7.6.0",
+    "@types/csurf": "1.11.1",
     "@types/jest": "25.2.1",
     "@types/moment": "2.13.0",
     "@types/moment-timezone": "0.5.30",
@@ -79,5 +84,13 @@
   },
   "peerDependencies": {
     "@types/node": "13.13.4"
+  },
+  "betterScripts": {
+    "dev": {
+      "command": "nest start --watch --exec 'node -r tsconfig-paths/register -r ts-node/register ./src/main.ts'",
+      "env": {
+        "NODE_ENV": "development"
+      }
+    }
   }
 }

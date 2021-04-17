@@ -22,11 +22,11 @@ export class UserService {
     ) {
     }
 
-    getUserByEmail(email: string) {
+    getUserByEmail(_email: string) {
         return {} as UserEntity;
     }
 
-    createUser(data: any): UserEntity {
+    createUser(_data: any): UserEntity {
         return {} as UserEntity;
     }
 

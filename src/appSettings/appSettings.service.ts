@@ -1,6 +1,10 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
+import isEmpty from 'lodash/isEmpty';
+import omit from 'lodash/omit';
 import {Repository} from 'typeorm';
+
+import {AppSettingsRequest} from 'src/appSettings/appSettings.interface';
 
 import {AppSettingsEntity} from './appSettings.entity';
 import {resetSettings} from './utils/prepareSettings';
@@ -14,23 +18,34 @@ export class AppSettingsService {
         private readonly appSettingsRepository: Repository<AppSettingsEntity>,
     ) {}
 
-    async update() {
-        // Find first item
-        // If it's not -> save new
-        const item = await this.appSettingsRepository.findOne(1);
+    async findItem() {
+        const items = await this.appSettingsRepository.find({
+            take: 1,
+        });
+
+        if (isEmpty(items)) {
+            return null;
+        }
+
+        return items[0];
+    }
+
+    async find() {
+        const item = await this.findItem();
+        if (!item) {
+            return item;
+        }
+
+        return omit(item, ['id']);
+    }
+
+    async update(data: Partial<AppSettingsRequest>) {
+        const item = await this.findItem();
         if (!item) {
             await this.appSettingsRepository.save(emptySettings);
             return;
         }
 
-        const resp = await this.appSettingsRepository.save({
-            accessRegister: true,
-            authDomainRegexp: 'str',
-        });
-        console.log(resp);
-    }
-
-    async get() {
-        return await this.appSettingsRepository.findOne(1);
+        await this.appSettingsRepository.update(item.id, data);
     }
 }

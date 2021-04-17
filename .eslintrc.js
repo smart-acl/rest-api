@@ -39,6 +39,14 @@ module.exports = {
                     ['parent', 'sibling'],
                     'index'
                 ],
+                pathGroups: [
+                    {
+                        pattern: 'src/**',
+                        group: 'internal',
+                        position: 'before',
+                    },
+                ],
+                pathGroupsExcludedImportTypes: ['builtin'],
                 alphabetize: {
                     order: 'asc',
                     caseInsensitive: true
