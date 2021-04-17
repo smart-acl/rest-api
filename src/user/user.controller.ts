@@ -49,9 +49,8 @@ export class UserController {
     async login(@Body('user') loginUserDto: LoginUserDto): Promise<TokenResponse> {
         const user = await this.userService.findOne(loginUserDto);
 
-        const errors = {User: 'not found'};
         if (!user) {
-            throw new HttpException({errors}, HttpStatus.UNAUTHORIZED);
+            throw new HttpException({message: 'wrong data'}, HttpStatus.UNAUTHORIZED);
         }
 
         const token = this.jwtService.sign(omit(user, ['password']));
