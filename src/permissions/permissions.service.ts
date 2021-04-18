@@ -1,15 +1,28 @@
 import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
+import {InjectConnection, InjectRepository} from '@nestjs/typeorm';
+import {Repository, Connection} from 'typeorm';
 
-import {CreatePermissionDto} from './dto';
-import {PermissionsEntity} from './permissions.entity';
+import {UserService} from 'src/user/user.service';
+
+import {
+    CreatePermissionDto,
+    SetUserPermissionsDto,
+} from './dto';
+import {DuplicateException} from './exceptions/dto';
+import {EntityException} from './exceptions/entities';
+import {PermissionsEntity, UserPermissionsEntity} from './permissions.entity';
+import {bulkPermissions} from './utils/bulk';
 
 @Injectable()
 export class PermissionsService {
     constructor(
         @InjectRepository(PermissionsEntity)
         private readonly permissionsRepository: Repository<PermissionsEntity>,
+        @InjectRepository(UserPermissionsEntity)
+        private readonly userPermissionsRepository: Repository<UserPermissionsEntity>,
+        private readonly userService: UserService,
+        @InjectConnection()
+        private readonly connection: Connection,
     ) {}
 
     requestAll() {
@@ -22,10 +35,45 @@ export class PermissionsService {
             return {message: 'ok', isOk: true};
         } catch (_error) {
             if (_error.toString().includes('duplicate')) {
-                return {message: 'duplicate error', isOk: false};
+                throw new DuplicateException();
             }
 
             return {message: 'save error', isOk: false};
         }
+    }
+
+    async set(body: SetUserPermissionsDto) {
+        await bulkPermissions(
+            this.connection,
+            await this.prepareSetUserPermissions(body),
+        );
+    }
+
+    private async prepareSetUserPermissions(
+        {users, permissions}: SetUserPermissionsDto,
+    ): Promise<UserPermissionsEntity[]> {
+        const result: UserPermissionsEntity[] = [];
+
+        for await (const user of users) {
+            for await (const permission of permissions) {
+                const entity = new UserPermissionsEntity();
+
+                const userEntity = await this.userService.findById(user);
+                if (!userEntity) {
+                    throw new EntityException('user', user);
+                }
+                entity.user = userEntity;
+
+                const permissionEntity = await this.permissionsRepository.findOne({name: permission});
+                if (!permissionEntity) {
+                    throw new EntityException('permission', permission);
+                }
+                entity.permission = permissionEntity;
+
+                result.push(entity);
+            }
+        }
+
+        return result;
     }
 }

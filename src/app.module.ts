@@ -15,7 +15,9 @@ import {UserModule} from './user/user.module';
             envFilePath: `.${process.env.NODE_ENV}.env`,
             isGlobal: true,
         }),
-        TypeOrmModule.forRoot(),
+        TypeOrmModule.forRoot({
+            autoLoadEntities: true,
+        }),
         CacheModule.register(),
         UserModule,
         HealthcheckModule,

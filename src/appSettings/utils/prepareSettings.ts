@@ -4,5 +4,7 @@ export function resetSettings(): Omit<AppSettingsEntity, 'id'> {
     return {
         accessRegister: false,
         authDomainRegexp: null,
+        created: new Date(),
+        updated: null,
     };
 }

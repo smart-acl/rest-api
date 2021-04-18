@@ -6,13 +6,18 @@ import {
     Body,
     HttpException,
     HttpStatus,
+    UsePipes,
 } from '@nestjs/common';
 import {ApiTags, ApiResponse} from '@nestjs/swagger';
 
 import {JwtAuthGuard} from 'src/user/guards/jwt-auth.guard';
 
-import {CreatePermissionDto} from './dto';
+import {
+    CreatePermissionDto,
+    SetUserPermissionsDto,
+} from './dto';
 import {PermissionsService} from './permissions.service';
+import {PermissionsExistsValidator} from './validators/permissions-exists.validator';
 
 @ApiTags('Permissions')
 @Controller('permissions')
@@ -27,7 +32,7 @@ export class PermissionsController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @ApiResponse({status: 200, description: 'list of all permissions'})
+    @ApiResponse({status: 200, description: 'list of user permissions'})
     @Get('')
     async requestAllByUser() {
         return [];
@@ -47,11 +52,13 @@ export class PermissionsController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @UsePipes(PermissionsExistsValidator)
     @ApiResponse({status: 200, description: 'set new user permissions'})
     @Post('set')
-    async set() {
-        return [];
+    async set(@Body() body: SetUserPermissionsDto) {
+        await this.permissionsService.set(body);
     }
+
     @UseGuards(JwtAuthGuard)
     @ApiResponse({status: 200, description: 'set new user permissions'})
     @Post('unset')

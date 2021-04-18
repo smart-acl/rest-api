@@ -6,6 +6,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import argon2 from 'argon2';
 import {validate} from 'class-validator';
 import {Repository, getRepository} from 'typeorm';
+import {Nullable} from 'utils';
 
 import {CreateUserDto, LoginUserDto, UpdateUserDto} from './dto';
 import {UserEntity} from './user.entity';
@@ -33,7 +34,7 @@ export class UserService {
         return null;
     }
 
-    async create(dto: CreateUserDto): Promise<UserRO> {
+    async create(dto: CreateUserDto): Promise<UserEntity> {
         const {username, email, password} = dto;
         const qb = await getRepository(UserEntity)
             .createQueryBuilder('user')
@@ -57,12 +58,11 @@ export class UserService {
             const _errors = {username: 'userinput is not valid'};
             throw new HttpException({message: 'Input data validation failed', _errors}, HttpStatus.BAD_REQUEST);
         } else {
-            const savedUser = await this.userRepository.save(newUser);
-            return UserService.buildUserRO(savedUser);
+            return this.userRepository.save(newUser);
         }
     }
 
-    async update(id: number, dto: UpdateUserDto): Promise<UserEntity> {
+    async update(id: number, dto: Partial<UpdateUserDto>): Promise<UserEntity> {
         const toUpdate = await this.userRepository.findOne(id);
         delete toUpdate.password;
 
@@ -70,27 +70,27 @@ export class UserService {
         return await this.userRepository.save(updated);
     }
 
-    async findById(id: number): Promise<UserRO> {
+    async findById(id: number): Promise<Nullable<UserEntity>> {
         const user = await this.userRepository.findOne(id);
 
         if (!user) {
             return null;
         }
 
-        return UserService.buildUserRO(user);
+        return user;
     }
 
-    async findByEmail(email: string): Promise<UserRO> {
+    async findByEmail(email: string): Promise<Nullable<UserEntity>> {
         const user = await this.userRepository.findOne({email: email});
 
         if (!user) {
             return null;
         }
 
-        return UserService.buildUserRO(user);
+        return user;
     }
 
-    private static buildUserRO(user: UserEntity): UserRO {
+    buildUserRO(user: UserEntity): UserRO {
         const userRO = {
             id: user.id,
             username: user.username,

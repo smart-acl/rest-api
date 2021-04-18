@@ -22,7 +22,7 @@ export class AuthMiddleware implements NestMiddleware {
                 throw new HttpException({message: 'user not found'}, HttpStatus.UNAUTHORIZED);
             }
 
-            req.user = user.user;
+            req.user = this.userService.buildUserRO(user).user;
             next();
 
         } else {

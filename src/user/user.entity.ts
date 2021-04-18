@@ -5,10 +5,9 @@ import {
     PrimaryGeneratedColumn,
     Column,
     BeforeInsert,
-    OneToMany,
+    CreateDateColumn,
+    UpdateDateColumn,
 } from 'typeorm';
-
-import {PermissionsEntity} from 'src/permissions/permissions.entity';
 
 @Entity('user')
 export class UserEntity {
@@ -25,11 +24,19 @@ export class UserEntity {
     @Column()
     password: string;
 
-    @OneToMany(() => PermissionsEntity, p => p.name)
-    permissions: string[];
+    @CreateDateColumn({nullable: true})
+    created: Date;
+
+    @UpdateDateColumn({nullable: true})
+    updated: Date;
 
     @BeforeInsert()
     async hashPassword(): Promise<void> {
         this.password = await argon2.hash(this.password);
+    }
+
+    @BeforeInsert()
+    emailToLowerCase() {
+        this.email = this.email.toLowerCase();
     }
 }

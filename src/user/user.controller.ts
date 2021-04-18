@@ -39,7 +39,7 @@ export class UserController {
             throw new HttpException({message: 'no user'}, HttpStatus.BAD_REQUEST);
         }
 
-        return user;
+        return this.userService.buildUserRO(user);
     }
 
     @UseGuards(JwtAuthGuard)
