@@ -2,7 +2,7 @@ import {Connection} from 'typeorm';
 
 import {DuplicateException} from 'src/utils/exceptions/dto';
 
-import {PermissionsGroupsMapEntity, PermissionsGroupsEntity} from '../permissionGroups.entity';
+import {PermissionsGroupsMapEntity} from '../permissionGroups.entity';
 
 export async function createBulkGroupPermissions(
     connection: Connection,

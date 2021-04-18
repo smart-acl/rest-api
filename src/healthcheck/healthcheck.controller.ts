@@ -5,7 +5,7 @@ import {Pong} from './healthcheck.interface';
 import {HealthcheckService} from './healthcheck.service';
 
 @ApiBearerAuth()
-@ApiTags('healthcheck')
+@ApiTags('Healthcheck')
 @Controller('healthcheck')
 export class HealthcheckController {
     constructor(private readonly service: HealthcheckService) {}

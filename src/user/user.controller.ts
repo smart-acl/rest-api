@@ -21,7 +21,7 @@ import {UserRO, TokenResponse} from './user.interface';
 import {UserService} from './user.service';
 
 @ApiBearerAuth()
-@ApiTags('users')
+@ApiTags('User')
 @Controller('users')
 export class UserController {
     constructor(

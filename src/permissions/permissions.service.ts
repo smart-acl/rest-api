@@ -30,6 +30,12 @@ export class PermissionsService {
         return this.permissionsRepository.findOne({name});
     }
 
+    findByNames(names: string[]) {
+        return this.permissionsRepository.createQueryBuilder()
+            .where('name IN (:...names)', {names})
+            .getMany();
+    }
+
     requestAll() {
         return this.permissionsRepository.find();
     }
@@ -68,7 +74,7 @@ export class PermissionsService {
         );
     }
 
-    private async prepareSetUserPermissions(
+    async prepareSetUserPermissions(
         {users, permissions}: SetUserPermissionsDto,
     ): Promise<UserPermissionsEntity[]> {
         const result: UserPermissionsEntity[] = [];

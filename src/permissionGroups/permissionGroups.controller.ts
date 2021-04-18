@@ -13,7 +13,7 @@ import {ApiTags, ApiResponse} from '@nestjs/swagger';
 import {JwtAuthGuard} from 'src/user/guards/jwt-auth.guard';
 import {DEFAULT_RESPONSES} from 'src/utils/http/response';
 
-import {CreateGroupDto, PushPermissionsDto} from './dto';
+import {CreateGroupDto, PushPermissionsDto, SetGroupToUserDto} from './dto';
 import {PermissionGroupsService} from './permissionGroups.service';
 
 @ApiTags('Permissions Groups')
@@ -61,15 +61,17 @@ export class PermissionGroupsController {
     @ApiResponse({status: 200, description: 'set new user permissions'})
     @Post('set')
     @HttpCode(HttpStatus.OK)
-    async set(@Body() body: any) {
-        // await this.permissionsService.set(body);
+    async set(@Body() body: SetGroupToUserDto) {
+        await this.permissionsService.set(body);
+        return DEFAULT_RESPONSES.CHANGE;
     }
 
     @UseGuards(JwtAuthGuard)
     @ApiResponse({status: 200, description: 'unset user permissions'})
     @Post('unset')
     @HttpCode(HttpStatus.OK)
-    async unset(@Body() body: any) {
-        // await this.permissionsService.unset(body);
+    async unset(@Body() body: SetGroupToUserDto) {
+        await this.permissionsService.unset(body);
+        return DEFAULT_RESPONSES.CHANGE;
     }
 }
