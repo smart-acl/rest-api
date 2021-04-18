@@ -2,6 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {InjectConnection, InjectRepository} from '@nestjs/typeorm';
 import {Repository, Connection} from 'typeorm';
 
+import {UserEntity} from 'src/user/user.entity';
 import {UserService} from 'src/user/user.service';
 
 import {
@@ -11,7 +12,7 @@ import {
 import {DuplicateException} from './exceptions/dto';
 import {EntityException} from './exceptions/entities';
 import {PermissionsEntity, UserPermissionsEntity} from './permissions.entity';
-import {bulkPermissions} from './utils/bulk';
+import {setBulkPermissions, unsetBulkPermissions} from './utils/bulk';
 
 @Injectable()
 export class PermissionsService {
@@ -29,6 +30,15 @@ export class PermissionsService {
         return this.permissionsRepository.find();
     }
 
+    requestAllByUser(user: UserEntity) {
+        return this.userPermissionsRepository.find({
+            relations: ['permission'],
+            where: {
+                user: user,
+            },
+        });
+    }
+
     async createOne(body: CreatePermissionDto): Promise<{message: string; isOk: boolean}> {
         try {
             await this.permissionsRepository.save(body);
@@ -43,7 +53,14 @@ export class PermissionsService {
     }
 
     async set(body: SetUserPermissionsDto) {
-        await bulkPermissions(
+        await setBulkPermissions(
+            this.connection,
+            await this.prepareSetUserPermissions(body),
+        );
+    }
+
+    async unset(body: SetUserPermissionsDto) {
+        await unsetBulkPermissions(
             this.connection,
             await this.prepareSetUserPermissions(body),
         );

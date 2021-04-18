@@ -50,7 +50,7 @@ export class UserController {
 
     @Post('register')
     async create(@Body('user') userData: CreateUserDto) {
-        return this.userService.create(userData);
+        return this.userService.buildUserRO(await this.userService.create(userData));
     }
 
     @Post('login')

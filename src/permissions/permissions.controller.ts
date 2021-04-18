@@ -6,18 +6,16 @@ import {
     Body,
     HttpException,
     HttpStatus,
-    UsePipes,
+    HttpCode,
 } from '@nestjs/common';
 import {ApiTags, ApiResponse} from '@nestjs/swagger';
 
 import {JwtAuthGuard} from 'src/user/guards/jwt-auth.guard';
+import {User} from 'src/user/user.decorator';
+import {UserEntity} from 'src/user/user.entity';
 
-import {
-    CreatePermissionDto,
-    SetUserPermissionsDto,
-} from './dto';
+import {CreatePermissionDto, SetUserPermissionsDto} from './dto';
 import {PermissionsService} from './permissions.service';
-import {PermissionsExistsValidator} from './validators/permissions-exists.validator';
 
 @ApiTags('Permissions')
 @Controller('permissions')
@@ -33,13 +31,13 @@ export class PermissionsController {
 
     @UseGuards(JwtAuthGuard)
     @ApiResponse({status: 200, description: 'list of user permissions'})
-    @Get('')
-    async requestAllByUser() {
-        return [];
+    @Get('me')
+    async requestAllByUser(@User() user: UserEntity) {
+        return this.permissionsService.requestAllByUser(user);
     }
 
     @UseGuards(JwtAuthGuard)
-    @ApiResponse({status: 200, description: 'create one permission'})
+    @ApiResponse({status: 201, description: 'create one permission'})
     @Post('create')
     async createOne(@Body('') body: CreatePermissionDto) {
         const {message, isOk} = await this.permissionsService.createOne(body);
@@ -52,17 +50,18 @@ export class PermissionsController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @UsePipes(PermissionsExistsValidator)
     @ApiResponse({status: 200, description: 'set new user permissions'})
     @Post('set')
+    @HttpCode(HttpStatus.OK)
     async set(@Body() body: SetUserPermissionsDto) {
         await this.permissionsService.set(body);
     }
 
     @UseGuards(JwtAuthGuard)
-    @ApiResponse({status: 200, description: 'set new user permissions'})
+    @ApiResponse({status: 200, description: 'unset user permissions'})
     @Post('unset')
-    async unset() {
-        return [];
+    @HttpCode(HttpStatus.OK)
+    async unset(@Body() body: SetUserPermissionsDto) {
+        await this.permissionsService.unset(body);
     }
 }
