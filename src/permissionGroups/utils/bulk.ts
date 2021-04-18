@@ -2,11 +2,11 @@ import {Connection} from 'typeorm';
 
 import {DuplicateException} from 'src/utils/exceptions/dto';
 
-import {UserPermissionsEntity} from '../permissions.entity';
+import {PermissionsGroupsMapEntity, PermissionsGroupsEntity} from '../permissionGroups.entity';
 
-export async function setBulkPermissions(
+export async function createBulkGroupPermissions(
     connection: Connection,
-    items: UserPermissionsEntity[],
+    items: PermissionsGroupsMapEntity[],
 ) {
     try {
         await connection.transaction(async manager => {
@@ -23,16 +23,16 @@ export async function setBulkPermissions(
     }
 }
 
-export async function unsetBulkPermissions(
+export async function popBulkGroupPermissions(
     connection: Connection,
-    items: UserPermissionsEntity[],
+    items: PermissionsGroupsMapEntity[],
 ) {
     await connection.transaction(async manager => {
         for await (const item of items) {
             await manager.createQueryBuilder()
                 .delete()
-                .from(UserPermissionsEntity)
-                .where({user: item.user.id, permission: item.permission.id})
+                .from(PermissionsGroupsMapEntity)
+                .where({group: item.group.id, permission: item.permission.id})
                 .execute();
         }
     });

@@ -7,10 +7,10 @@ import {
     Unique,
 } from 'typeorm';
 
-import {UserEntity} from 'src/user/user.entity';
+import {PermissionsEntity} from 'src/permissions/permissions.entity';
 
-@Entity('permissions')
-export class PermissionsEntity {
+@Entity('permissionsGroups')
+export class PermissionsGroupsEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -23,18 +23,18 @@ export class PermissionsEntity {
     created: Date;
 }
 
-@Entity('userPermissions')
-@Unique('userPermissions_data', ['user', 'permission'])
-export class UserPermissionsEntity {
+@Entity('permissionsGroupsMap')
+@Unique('permissionsGroupsMap_data', ['group', 'permission'])
+export class PermissionsGroupsMapEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => UserEntity)
-    user: UserEntity;
+    @ManyToOne(() => PermissionsGroupsEntity)
+    group: PermissionsGroupsEntity;
 
     @ManyToOne(() => PermissionsEntity)
     permission: PermissionsEntity;
 
-    @CreateDateColumn({nullable: true})
+    @CreateDateColumn()
     created: Date;
 }

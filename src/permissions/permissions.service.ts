@@ -4,13 +4,13 @@ import {Repository, Connection} from 'typeorm';
 
 import {UserEntity} from 'src/user/user.entity';
 import {UserService} from 'src/user/user.service';
+import {DuplicateException} from 'src/utils/exceptions/dto';
+import {EntityException} from 'src/utils/exceptions/entities';
 
 import {
     CreatePermissionDto,
     SetUserPermissionsDto,
 } from './dto';
-import {DuplicateException} from './exceptions/dto';
-import {EntityException} from './exceptions/entities';
 import {PermissionsEntity, UserPermissionsEntity} from './permissions.entity';
 import {setBulkPermissions, unsetBulkPermissions} from './utils/bulk';
 
@@ -26,6 +26,10 @@ export class PermissionsService {
         private readonly connection: Connection,
     ) {}
 
+    findOne(name: string) {
+        return this.permissionsRepository.findOne({name});
+    }
+
     requestAll() {
         return this.permissionsRepository.find();
     }
@@ -33,9 +37,7 @@ export class PermissionsService {
     requestAllByUser(user: UserEntity) {
         return this.userPermissionsRepository.find({
             relations: ['permission'],
-            where: {
-                user: user,
-            },
+            where: {user},
         });
     }
 

@@ -11,17 +11,15 @@ import {
 import {ApiTags, ApiResponse} from '@nestjs/swagger';
 
 import {JwtAuthGuard} from 'src/user/guards/jwt-auth.guard';
-import {User} from 'src/user/user.decorator';
-import {UserEntity} from 'src/user/user.entity';
 import {DEFAULT_RESPONSES} from 'src/utils/http/response';
 
-import {CreatePermissionDto, SetUserPermissionsDto} from './dto';
-import {PermissionsService} from './permissions.service';
+import {CreateGroupDto, PushPermissionsDto} from './dto';
+import {PermissionGroupsService} from './permissionGroups.service';
 
-@ApiTags('Permissions')
-@Controller('permissions')
-export class PermissionsController {
-    constructor(private permissionsService: PermissionsService) {}
+@ApiTags('Permissions Groups')
+@Controller('permission-groups')
+export class PermissionGroupsController {
+    constructor(private permissionsService: PermissionGroupsService) {}
 
     @UseGuards(JwtAuthGuard)
     @ApiResponse({status: 200, description: 'list of all permissions'})
@@ -31,16 +29,9 @@ export class PermissionsController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @ApiResponse({status: 200, description: 'list of user permissions'})
-    @Get('me')
-    async requestAllByUser(@User() user: UserEntity) {
-        return this.permissionsService.requestAllByUser(user);
-    }
-
-    @UseGuards(JwtAuthGuard)
     @ApiResponse({status: 201, description: 'create one permission'})
     @Post('create')
-    async createOne(@Body('') body: CreatePermissionDto) {
+    async createOne(@Body('') body: CreateGroupDto) {
         const {message, isOk} = await this.permissionsService.createOne(body);
 
         if (!isOk) {
@@ -51,20 +42,34 @@ export class PermissionsController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @ApiResponse({status: 201, description: 'create one permission'})
+    @Post('permissions/push')
+    async push(@Body('') body: PushPermissionsDto) {
+        await this.permissionsService.push(body);
+        return DEFAULT_RESPONSES.CHANGE;
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiResponse({status: 201, description: 'create one permission'})
+    @Post('permissions/pop')
+    async pop(@Body('') body: PushPermissionsDto) {
+        await this.permissionsService.pop(body);
+        return DEFAULT_RESPONSES.CHANGE;
+    }
+
+    @UseGuards(JwtAuthGuard)
     @ApiResponse({status: 200, description: 'set new user permissions'})
     @Post('set')
     @HttpCode(HttpStatus.OK)
-    async set(@Body() body: SetUserPermissionsDto) {
-        await this.permissionsService.set(body);
-        return DEFAULT_RESPONSES.CHANGE;
+    async set(@Body() body: any) {
+        // await this.permissionsService.set(body);
     }
 
     @UseGuards(JwtAuthGuard)
     @ApiResponse({status: 200, description: 'unset user permissions'})
     @Post('unset')
     @HttpCode(HttpStatus.OK)
-    async unset(@Body() body: SetUserPermissionsDto) {
-        await this.permissionsService.unset(body);
-        return DEFAULT_RESPONSES.CHANGE;
+    async unset(@Body() body: any) {
+        // await this.permissionsService.unset(body);
     }
 }

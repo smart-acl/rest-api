@@ -6,6 +6,7 @@ import {Connection} from 'typeorm';
 
 import {AppSettingsModule} from './appSettings/appSettings.module';
 import {HealthcheckModule} from './healthcheck/healthcheck.module';
+import {PermissionGroupsModule} from './permissionGroups/permissionGroups.module';
 import {PermissionsModule} from './permissions/permissions.module';
 import {UserModule} from './user/user.module';
 
@@ -23,6 +24,7 @@ import {UserModule} from './user/user.module';
         HealthcheckModule,
         AppSettingsModule,
         PermissionsModule,
+        PermissionGroupsModule,
     ],
     controllers: [],
     providers: [
