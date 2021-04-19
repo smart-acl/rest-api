@@ -8,6 +8,7 @@ import {AppSettingsModule} from './appSettings/appSettings.module';
 import {HealthcheckModule} from './healthcheck/healthcheck.module';
 import {PermissionGroupsModule} from './permissionGroups/permissionGroups.module';
 import {PermissionsModule} from './permissions/permissions.module';
+import {RulesModule} from './rules/rules.module';
 import {UserModule} from './user/user.module';
 
 @Module({
@@ -25,6 +26,7 @@ import {UserModule} from './user/user.module';
         AppSettingsModule,
         PermissionsModule,
         PermissionGroupsModule,
+        RulesModule,
     ],
     controllers: [],
     providers: [

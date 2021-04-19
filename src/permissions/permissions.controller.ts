@@ -24,21 +24,21 @@ export class PermissionsController {
     constructor(private permissionsService: PermissionsService) {}
 
     @UseGuards(JwtAuthGuard)
-    @ApiResponse({status: 200, description: 'list of all permissions'})
+    @ApiResponse({status: HttpStatus.OK, description: 'list of all permissions'})
     @Get('')
     requestAll() {
         return this.permissionsService.requestAll();
     }
 
     @UseGuards(JwtAuthGuard)
-    @ApiResponse({status: 200, description: 'list of user permissions'})
+    @ApiResponse({status: HttpStatus.OK, description: 'list of user permissions'})
     @Get('me')
     async requestAllByUser(@User() user: UserEntity) {
         return this.permissionsService.requestAllByUser(user);
     }
 
     @UseGuards(JwtAuthGuard)
-    @ApiResponse({status: 201, description: 'create one permission'})
+    @ApiResponse({status: HttpStatus.CREATED, description: 'create one permission'})
     @Post('create')
     async createOne(@Body('') body: CreatePermissionDto) {
         const {message, isOk} = await this.permissionsService.createOne(body);
@@ -51,7 +51,7 @@ export class PermissionsController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @ApiResponse({status: 200, description: 'set new user permissions'})
+    @ApiResponse({status: HttpStatus.OK, description: 'set new user permissions'})
     @Post('set')
     @HttpCode(HttpStatus.OK)
     async set(@Body() body: SetUserPermissionsDto) {
@@ -60,7 +60,7 @@ export class PermissionsController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @ApiResponse({status: 200, description: 'unset user permissions'})
+    @ApiResponse({status: HttpStatus.OK, description: 'unset user permissions'})
     @Post('unset')
     @HttpCode(HttpStatus.OK)
     async unset(@Body() body: SetUserPermissionsDto) {

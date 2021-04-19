@@ -22,14 +22,14 @@ export class PermissionGroupsController {
     constructor(private permissionsService: PermissionGroupsService) {}
 
     @UseGuards(JwtAuthGuard)
-    @ApiResponse({status: 200, description: 'list of all permissions'})
+    @ApiResponse({status: HttpStatus.OK, description: 'list of all groups'})
     @Get('')
     requestAll() {
         return this.permissionsService.requestAll();
     }
 
     @UseGuards(JwtAuthGuard)
-    @ApiResponse({status: 201, description: 'create one permission'})
+    @ApiResponse({status: HttpStatus.CREATED, description: 'create group'})
     @Post('create')
     async createOne(@Body('') body: CreateGroupDto) {
         const {message, isOk} = await this.permissionsService.createOne(body);
@@ -42,7 +42,7 @@ export class PermissionGroupsController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @ApiResponse({status: 201, description: 'create one permission'})
+    @ApiResponse({status: HttpStatus.CREATED, description: 'push permissions to group'})
     @Post('permissions/push')
     async push(@Body('') body: PushPermissionsDto) {
         await this.permissionsService.push(body);
@@ -50,7 +50,7 @@ export class PermissionGroupsController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @ApiResponse({status: 201, description: 'create one permission'})
+    @ApiResponse({status: HttpStatus.CREATED, description: 'pop permissions from group'})
     @Post('permissions/pop')
     async pop(@Body('') body: PushPermissionsDto) {
         await this.permissionsService.pop(body);
@@ -58,7 +58,7 @@ export class PermissionGroupsController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @ApiResponse({status: 200, description: 'set new user permissions'})
+    @ApiResponse({status: HttpStatus.OK, description: 'set permissions by group'})
     @Post('set')
     @HttpCode(HttpStatus.OK)
     async set(@Body() body: SetGroupToUserDto) {
@@ -67,7 +67,7 @@ export class PermissionGroupsController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @ApiResponse({status: 200, description: 'unset user permissions'})
+    @ApiResponse({status: HttpStatus.OK, description: 'unset permissions by group'})
     @Post('unset')
     @HttpCode(HttpStatus.OK)
     async unset(@Body() body: SetGroupToUserDto) {
