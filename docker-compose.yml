@@ -4,13 +4,31 @@ services:
   api:
     build:
       context: .
-      dockerfile: docker/dev.dockerfile
+      dockerfile: docker/admin/dev.dockerfile
       args:
         - NODE_ENV=development
     environment:
       - PORT=3000
     ports:
       - 3000:3000
+    depends_on:
+      - postgres
+    links:
+      - postgres:postgres
+    volumes:
+      - ./:/usr/src/app/
+      - /usr/src/app/node_modules
+
+  agent:
+    build:
+      context: .
+      dockerfile: docker/agent/dev.dockerfile
+      args:
+        - NODE_ENV=development
+    environment:
+      - PORT=3000
+    ports:
+      - 3001:80
     depends_on:
       - postgres
     links:

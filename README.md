@@ -44,3 +44,9 @@ $ npm run build && npm run start:watch
   "synchronize": true
 }
 ```
+
+## Agent
+
+```
+$ docker-compose up agent -d # --build for rebuild
+```

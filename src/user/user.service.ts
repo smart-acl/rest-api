@@ -81,7 +81,17 @@ export class UserService {
     }
 
     async findByEmail(email: string): Promise<Nullable<UserEntity>> {
-        const user = await this.userRepository.findOne({email: email});
+        const user = await this.userRepository.findOne({email});
+
+        if (!user) {
+            return null;
+        }
+
+        return user;
+    }
+
+    async findByLogin(username: string): Promise<Nullable<UserEntity>> {
+        const user = await this.userRepository.findOne({username});
 
         if (!user) {
             return null;

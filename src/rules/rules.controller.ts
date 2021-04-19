@@ -14,7 +14,7 @@ import {ApiTags, ApiResponse} from '@nestjs/swagger';
 import {JwtAuthGuard} from 'src/user/guards/jwt-auth.guard';
 import {DEFAULT_RESPONSES} from 'src/utils/http/response';
 
-import {CreateDto, UpdateDto, DeleteDto} from './dto';
+import {CreateDto, UpdateDto, DeleteDto, CheckDto} from './dto';
 import {RulesService} from './rules.service';
 
 @ApiTags('Rules')
@@ -53,5 +53,13 @@ export class RulesController {
     async delete(@Body('') body: DeleteDto) {
         await this.rulesService.delete(body);
         return DEFAULT_RESPONSES.CHANGE;
+    }
+
+    // TODO: Add client guard to check token of external API
+    @ApiResponse({status: HttpStatus.OK, description: 'create one permission'})
+    @HttpCode(HttpStatus.OK)
+    @Post('check')
+    async check(@Body('') body: CheckDto) {
+        await this.rulesService.check(body);
     }
 }
