@@ -1,19 +1,15 @@
 import {Injectable, NotFoundException} from '@nestjs/common';
 import {InjectConnection, InjectRepository} from '@nestjs/typeorm';
-import {Repository, Connection, getConnection, EntityManager} from 'typeorm';
+import isEmpty from 'lodash/isEmpty';
+import {Repository, Connection} from 'typeorm';
+
+import {PermissionsService} from 'src/permissions/permissions.service';
+import {UserService} from 'src/user/user.service';
 
 import {CreateDto, UpdateDto, DeleteDto, CheckDto} from './dto';
+import {CheckPermissionException, RulesCountException} from './exceptions/check';
 import {RulesEntity} from './rules.entity';
-import {PermissionsService} from "src/permissions/permissions.service";
-import {UserService} from "src/user/user.service";
-import { RulesCountException } from './exceptions/check';
-
-
-async function rawQuery<T = any[]>(query: string, parameters: object = {}, manager?: EntityManager): Promise<T> {
-    const conn = manager ? manager.connection : getConnection();
-    const [ escapedQuery, escapedParams ] = conn.driver.escapeQueryWithParameters(query, parameters, {});
-    return conn.query(escapedQuery, escapedParams);
-}
+import {SELECT_RULE_BY_METHOD_PATH} from './sql';
 
 @Injectable()
 export class RulesService {
@@ -53,20 +49,39 @@ export class RulesService {
             throw new NotFoundException('user not found');
         }
 
-        console.log(user, 'here');
-        // const rules = await this.connection.manager
-        //     .query(
-        //         'SELECT * FROM "rules" WHERE (rules @> \'[{"method": $1, "path": $2}]\')', [`"${method}"`, `"${route}"`]
-        //     );
-        const rules = await rawQuery(
-            'SELECT * FROM "rules" WHERE (rules @> \'[{"method": :method, "path": :route}]\')', {method, route}
-        )
-        console.log(rules);
+        /**
+         * Doesn't work with typeorm, because cannot parse <"method":> and <:method>
+         * WHERE (rules @> '[{"method": :method, "path": :path}]')
+         */
+        const foundRules: RulesEntity[] = await this.rulesRepository
+            .query(SELECT_RULE_BY_METHOD_PATH, [method, route]);
 
-        // if (rules.length > 1) {
-        //     throw new RulesCountException(route);
-        // }
+        if (foundRules.length > 1 || isEmpty(foundRules)) {
+            throw new RulesCountException(route);
+        }
 
-        await this.permissionsService.requestAllByUser(user);
+        // Search by full route text
+        const {all_of = [], one_of = []} = foundRules[0].rules
+            .find(({path, method: ruleMethod}) => path === route && ruleMethod === method)
+            .permissions;
+        const permissions = await this.permissionsService.requestAllByUser(user);
+
+        const hasAllRequired = !isEmpty(all_of)
+            ? all_of.every(
+                permission => permissions.find(({permission: {name}}) => name === permission),
+            )
+            : true;
+        if (!hasAllRequired) {
+            throw new CheckPermissionException(route, method);
+        }
+
+        const hasOneOf = !isEmpty(one_of)
+            ? one_of.some(
+                permission => permissions.find(({permission: {name}}) => name === permission),
+            )
+            : true;
+        if (!hasOneOf) {
+            throw new CheckPermissionException(route, method);
+        }
     }
 }

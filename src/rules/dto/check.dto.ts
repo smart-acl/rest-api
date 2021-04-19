@@ -1,5 +1,6 @@
 import {IsNotEmpty, IsEnum, IsString} from 'class-validator';
-import { HttpMethod } from 'src/types/http';
+
+import {HttpMethod} from 'src/types/http';
 
 export class CheckDto {
     @IsNotEmpty()

@@ -61,5 +61,6 @@ export class RulesController {
     @Post('check')
     async check(@Body('') body: CheckDto) {
         await this.rulesService.check(body);
+        return DEFAULT_RESPONSES.CHANGE;
     }
 }
