@@ -11,7 +11,7 @@ export class HealthcheckController {
     constructor(private readonly service: HealthcheckService) {}
 
     @Get('/ping')
-    async pong(): Promise<Pong> {
-        return await this.service.pong();
+    pong(): Promise<Pong> {
+        return this.service.pong();
     }
 }

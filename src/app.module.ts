@@ -5,6 +5,7 @@ import {TypeOrmModule} from '@nestjs/typeorm';
 import {Connection} from 'typeorm';
 
 import {AppSettingsModule} from './appSettings/appSettings.module';
+import {CsrfModule} from './csrf/csrf.module';
 import {HealthcheckModule} from './healthcheck/healthcheck.module';
 import {PermissionGroupsModule} from './permissionGroups/permissionGroups.module';
 import {PermissionsModule} from './permissions/permissions.module';
@@ -27,6 +28,7 @@ import {UserModule} from './user/user.module';
         PermissionsModule,
         PermissionGroupsModule,
         RulesModule,
+        CsrfModule,
     ],
     controllers: [],
     providers: [

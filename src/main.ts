@@ -1,7 +1,10 @@
 import {NestFactory} from '@nestjs/core';
 import {SwaggerModule, DocumentBuilder} from '@nestjs/swagger';
-// import csurf from 'csurf';
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
+import csurf from 'csurf';
 
+import {handleCSRFError} from 'src/csrf/utils/middleware';
 import {ValidationPipe} from 'src/shared/pipes/validation.pipe';
 
 import {ApplicationModule} from './app.module';
@@ -10,8 +13,13 @@ import {ApplicationModule} from './app.module';
     const app = await NestFactory.create(ApplicationModule, {
         cors: true,
     });
-    app.setGlobalPrefix('api');
-    app.useGlobalPipes(new ValidationPipe());
+    app
+        .setGlobalPrefix('api')
+        .useGlobalPipes(new ValidationPipe())
+        .use(bodyParser.urlencoded({extended: false}))
+        .use(cookieParser())
+        .use(csurf({cookie: true}))
+        .use(handleCSRFError);
 
     const options = new DocumentBuilder()
         .setTitle('Smart ACL Admin REST API')
