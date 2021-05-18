@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:prod": "node dist/main.js",
-    "start:dev": "better-npm-run dev",
+    "start:prod": "better-npm-run start",
+    "start:dev": "better-npm-run start",
     "build": "npm-run-all clear:app build:tsc",
     "build:tsc": "tsc",
     "clear:app": "rm -rf dist",
@@ -94,7 +94,7 @@
     "@types/node": "13.13.4"
   },
   "betterScripts": {
-    "dev": {
+    "start": {
       "command": "nest start --watch --exec 'node -r tsconfig-paths/register -r ts-node/register ./src/main.ts'",
       "env": {
         "NODE_ENV": "development"
